@@ -8,5 +8,5 @@ resolver="2"
 
 [dependencies]
 
-iced = {version = "0.4", features = ["image"]}
+iced = {version = "0.4", features = ["canvas", "image"]}
 

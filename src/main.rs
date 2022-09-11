@@ -1,23 +1,33 @@
-use iced::{
-    executor, Application, Column, Command, Container, Element, Image, Length, Row, Settings,
-};
+use iced::{executor, Application, Column, Command, Container, Element, Image, Length, Settings};
+
+use iced::canvas::Canvas;
 
 mod structs;
-use structs::Tiles;
+use structs::{Grid, Tiles};
 
 fn main() -> iced::Result {
-    Example::run(Settings::default())
+    WaveFunctionCollapse::run(Settings {
+        antialiasing: true,
+        ..Settings::default()
+    })
 }
 
-struct Example;
+#[derive(Debug)]
 
-impl Application for Example {
+enum Message {}
+
+#[derive(Default)]
+struct WaveFunctionCollapse {
+    grid: Grid,
+}
+
+impl Application for WaveFunctionCollapse {
     type Executor = executor::Default;
-    type Message = ();
+    type Message = Message;
     type Flags = ();
 
-    fn new(_flags: ()) -> (Example, Command<Self::Message>) {
-        (Example, Command::none())
+    fn new(_flags: ()) -> (Self, Command<Self::Message>) {
+        (Self::default(), Command::none())
     }
 
     fn title(&self) -> String {
@@ -29,38 +39,29 @@ impl Application for Example {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
+        let canvas: Element<Message> = Canvas::new(&mut self.grid)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into();
+
         let base_tiles = Tiles::new();
 
-        println!("{:?}", base_tiles);
+        // let images = base_tiles
+        //     .images
+        //     .iter()
+        //     .map(|tile| {
+        //         Image::new(tile)
+        //             .width(Length::Fill)
+        //             .height(Length::Fill)
+        //             .into()
+        //     })
+        //     .collect();
 
-        let blank_tile = Image::new(base_tiles.blank)
+        Container::new(Column::new().push(canvas))
             .width(Length::Fill)
             .height(Length::Fill)
-            .into();
-        let down_tile = Image::new(base_tiles.down)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into();
-        let left_tile = Image::new(base_tiles.left)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into();
-        let right_tile = Image::new(base_tiles.right)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into();
-        let up_tile = Image::new(base_tiles.up)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into();
-
-        Container::new(Column::with_children(vec![
-            blank_tile, down_tile, left_tile, right_tile, up_tile,
-        ]))
-        .width(Length::Fill)
-        .height(Length::Fill)
-        .center_x()
-        .center_y()
-        .into()
+            .center_x()
+            .center_y()
+            .into()
     }
 }
