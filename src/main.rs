@@ -1,61 +1,37 @@
-use iced::{button, Alignment, Button, Column, Element, Sandbox, Settings, Text};
-
-#[derive(Debug, Clone, Copy)]
-pub enum Message {
-    IncrementPressed,
-    DecrementPressed,
+use iced::{executor, Application, Command, Container, Element, Image, Length, Settings};
+fn main() -> iced::Result {
+    Example::run(Settings::default())
 }
 
-struct Counter {
-    value: i32,
+struct Example;
 
-    increment_button: button::State,
-    decrement_button: button::State,
-}
+impl Application for Example {
+    type Executor = executor::Default;
+    type Message = ();
+    type Flags = ();
 
-impl Sandbox for Counter {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self {
-            value: 0,
-            increment_button: button::State::new(),
-            decrement_button: button::State::new(),
-        }
+    fn new(_flags: ()) -> (Example, Command<Self::Message>) {
+        (Example, Command::none())
     }
 
     fn title(&self) -> String {
-        String::from("Counter - Iced")
+        String::from("Example application")
     }
 
-    fn view(&mut self) -> Element<Message> {
-        Column::new()
-            .padding(20)
-            .align_items(Alignment::Center)
-            .push(
-                Button::new(&mut self.increment_button, Text::new("+"))
-                    .on_press(Message::IncrementPressed),
-            )
-            .push(Text::new(self.value.to_string()).size(50))
-            .push(
-                Button::new(&mut self.decrement_button, Text::new("-"))
-                    .on_press(Message::DecrementPressed),
-            )
+    fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
+        Command::none()
+    }
+
+    fn view(&mut self) -> Element<Self::Message> {
+        let image = Image::new("resources/autotile_tileset.png")
+            .width(Length::Fill)
+            .height(Length::Fill);
+
+        Container::new(image)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x()
+            .center_y()
             .into()
     }
-
-    fn update(&mut self, message: Message) {
-        match message {
-            Message::IncrementPressed => {
-                self.value += 1;
-            }
-            Message::DecrementPressed => {
-                self.value -= 1;
-            }
-        }
-    }
-}
-
-fn main() -> iced::Result {
-    Counter::run(Settings::default())
 }
