@@ -1,4 +1,10 @@
-use iced::{executor, Application, Command, Container, Element, Image, Length, Settings};
+use iced::{
+    executor, Application, Column, Command, Container, Element, Image, Length, Row, Settings,
+};
+
+mod structs;
+use structs::Tiles;
+
 fn main() -> iced::Result {
     Example::run(Settings::default())
 }
@@ -23,15 +29,38 @@ impl Application for Example {
     }
 
     fn view(&mut self) -> Element<Self::Message> {
-        let image = Image::new("resources/autotile_tileset.png")
-            .width(Length::Fill)
-            .height(Length::Fill);
+        let base_tiles = Tiles::new();
 
-        Container::new(image)
+        println!("{:?}", base_tiles);
+
+        let blank_tile = Image::new(base_tiles.blank)
             .width(Length::Fill)
             .height(Length::Fill)
-            .center_x()
-            .center_y()
-            .into()
+            .into();
+        let down_tile = Image::new(base_tiles.down)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into();
+        let left_tile = Image::new(base_tiles.left)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into();
+        let right_tile = Image::new(base_tiles.right)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into();
+        let up_tile = Image::new(base_tiles.up)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into();
+
+        Container::new(Column::with_children(vec![
+            blank_tile, down_tile, left_tile, right_tile, up_tile,
+        ]))
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .center_x()
+        .center_y()
+        .into()
     }
 }
