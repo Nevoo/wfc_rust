@@ -1,67 +1,42 @@
-use iced::{executor, Application, Column, Command, Container, Element, Image, Length, Settings};
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
+use std::time::Duration;
 
-use iced::canvas::Canvas;
+pub fn main() {
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-mod structs;
-use structs::{Grid, Tiles};
+    let window = video_subsystem
+        .window("rust-sdl2 demo", 800, 600)
+        .position_centered()
+        .build()
+        .unwrap();
 
-fn main() -> iced::Result {
-    WaveFunctionCollapse::run(Settings {
-        antialiasing: true,
-        ..Settings::default()
-    })
-}
+    let mut canvas = window.into_canvas().build().unwrap();
 
-#[derive(Debug)]
+    canvas.set_draw_color(Color::RGB(0, 255, 255));
+    canvas.clear();
+    canvas.present();
+    let mut event_pump = sdl_context.event_pump().unwrap();
+    let mut i = 0;
+    'running: loop {
+        // i = (i + 1) % 255;
+        // canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
+        // canvas.clear();
+        for event in event_pump.poll_iter() {
+            match event {
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                } => break 'running,
+                _ => {}
+            }
+        }
+        // The rest of the game loop goes here...
 
-enum Message {}
-
-#[derive(Default)]
-struct WaveFunctionCollapse {
-    grid: Grid,
-}
-
-impl Application for WaveFunctionCollapse {
-    type Executor = executor::Default;
-    type Message = Message;
-    type Flags = ();
-
-    fn new(_flags: ()) -> (Self, Command<Self::Message>) {
-        (Self::default(), Command::none())
-    }
-
-    fn title(&self) -> String {
-        String::from("Example application")
-    }
-
-    fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
-        Command::none()
-    }
-
-    fn view(&mut self) -> Element<Self::Message> {
-        let canvas: Element<Message> = Canvas::new(&mut self.grid)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into();
-
-        let base_tiles = Tiles::new();
-
-        // let images = base_tiles
-        //     .images
-        //     .iter()
-        //     .map(|tile| {
-        //         Image::new(tile)
-        //             .width(Length::Fill)
-        //             .height(Length::Fill)
-        //             .into()
-        //     })
-        //     .collect();
-
-        Container::new(Column::new().push(canvas))
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .center_x()
-            .center_y()
-            .into()
+        canvas.present();
+        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
 }

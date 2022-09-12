@@ -1,6 +1,6 @@
-use iced::{Color, Point, Size};
+use iced::{Color, Image, Point, Size};
 
-use iced::canvas::{self, Cache, Path};
+use iced::canvas::{self, Cache, Fill, Path};
 
 use std::collections::HashSet;
 
@@ -50,16 +50,16 @@ impl Default for Grid {
 
 impl Grid {
     pub fn from_dimension(width: isize, height: isize) -> Self {
-        let mut grid: Vec<(isize, isize)> = Vec::new();
+        let mut grid: Vec<Cell> = Vec::new();
 
-        for i in 0..width {
-            for j in 0..height {
-                grid.push((i, j))
+        for x in 0..width {
+            for y in 0..height {
+                grid.push(Cell { x, y })
             }
         }
 
         Self {
-            cells: grid.into_iter().map(|(x, y)| Cell { x, y }).collect(),
+            cells: grid.into_iter().collect(),
             cache: Cache::default(),
         }
     }
